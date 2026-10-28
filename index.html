@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NIGHTMARE</title>
+<meta name="description" content="NIGHTMARE — listen now.">
+<meta name="theme-color" content="#0C0504">
+<meta property="og:title" content="NIGHTMARE">
+<meta property="og:description" content="Listen now.">
+<meta property="og:image" content="nightmare-cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="image" href="nightmare-cover.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* ===== Release skin: swap these per release ===== */
+:root{
+  --ground:#0C0504;      /* page background */
+  --ink:#EBD3B5;         /* all text + icons */
+  --glow:242,166,73;     /* hover glow (r,g,b) */
+  --grain:.34;           /* film grain strength 0–.6 */
+  --cover-pos:40% 50%;   /* how the cover is cropped on phones */
+  --shade-w:62%;         /* width of the dark pool behind the center text */
+}
+@media (min-width:768px){
+  :root{--cover-pos:50% 35%;--shade-w:36%}
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ground)}
+body{color:var(--ink);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;text-transform:uppercase;-webkit-font-smoothing:antialiased;overflow:hidden}
+a{color:var(--ink)}
+button{font:inherit;color:inherit;text-transform:inherit;background:transparent;border:0;padding:0;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+
+#stage{position:fixed;inset:0;height:100dvh;overflow:hidden;touch-action:none}
+.layer{position:absolute;inset:0;overflow:hidden;will-change:transform,filter,opacity}
+
+/* ---------- cover ---------- */
+.weave{position:absolute;inset:-8px;overflow:hidden;animation:weave 4s steps(40) infinite}
+@keyframes weave{0%,100%{transform:translate(0,0)}25%{transform:translate(.6px,-.7px)}50%{transform:translate(-.5px,.6px)}75%{transform:translate(.4px,.7px)}}
+.breathe{position:absolute;inset:0;animation:breathe 14s ease-in-out infinite alternate}
+@keyframes breathe{to{transform:scale(1.05) translate(-6px,4px)}}
+.wake{position:absolute;inset:0;opacity:0;animation:wake 2s ease .2s forwards}
+@keyframes wake{to{opacity:1}}
+.cover-img{width:100%;height:100%;object-fit:cover;object-position:var(--cover-pos);display:block;filter:blur(16px) brightness(.4);transform:scale(1.12);transition:filter 2.8s cubic-bezier(.3,.6,.1,1),transform 3.6s cubic-bezier(.3,.6,.1,1)}
+.entered .cover-img{filter:blur(0) brightness(1);transform:scale(1.03)}
+.smear{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--cover-pos);mix-blend-mode:screen;opacity:0;pointer-events:none}
+.entered .smear{animation:smear 2.4s cubic-bezier(.3,.6,.1,1) .35s forwards}
+@keyframes smear{0%{opacity:0;transform:translateX(0);filter:blur(4px)}25%{opacity:.6;transform:translateX(-34px);filter:blur(10px)}100%{opacity:0;transform:translateX(26px);filter:blur(16px)}}
+.shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse var(--shade-w) 24% at 50% 50%,rgba(12,5,4,.3),transparent 100%),linear-gradient(to top,rgba(12,5,4,.75),transparent 22%);transition:opacity .8s}
+.shade-deep{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse var(--shade-w) 24% at 50% 50%,rgba(12,5,4,.35),transparent 100%);transition:opacity .8s}
+.listen-open .shade-deep{opacity:1}
+
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* enter */
+#enter{height:48px;padding:0 20px 0 calc(20px + .5em);letter-spacing:.5em;animation:pulse 2.8s ease-in-out infinite;transition:letter-spacing .9s cubic-bezier(.6,0,.2,1)}
+#enter:hover{letter-spacing:.6em}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.entered #enter{display:none}
+
+/* hub */
+.hub{display:none;flex-direction:column;align-items:center}
+.entered .hub{display:flex}
+.in{opacity:0;filter:blur(6px)}
+.entered .in{animation:fadeIn 1.8s cubic-bezier(.2,.6,.1,1) forwards}
+@keyframes fadeIn{to{opacity:var(--o,1);filter:blur(0)}}
+h1{margin:0;font-weight:400;font-size:12px;letter-spacing:.62em;padding-left:.62em}
+@media (min-width:768px){h1{font-size:13px}}
+#listen{margin-top:22px;height:44px;padding-left:.3em;font-size:9px;letter-spacing:.3em;transition:letter-spacing .9s cubic-bezier(.6,0,.2,1),opacity .6s}
+#listen:hover{letter-spacing:.42em}
+.listen-open #listen{opacity:.55 !important}
+
+/* sweeping hairline (listen now + email) */
+.line{position:relative}
+.line::before,.line::after{content:"";position:absolute;left:0;right:0;bottom:var(--lb,11px);height:1px}
+.line::before{background:rgba(235,211,181,.18);transition:background .6s}
+.line::after{background-image:linear-gradient(90deg,transparent,var(--ink),transparent);background-size:35% 1px;background-repeat:no-repeat;background-position:-60% 0;animation:sweep 3.4s cubic-bezier(.6,0,.3,1) infinite}
+.line:hover::before{background:rgba(235,211,181,.7)}
+@keyframes sweep{0%{background-position:-60% 0}100%{background-position:160% 0}}
+
+/* platform icons */
+.icons-slot{height:64px;display:flex;align-items:center}
+.icons{display:none;gap:6px}
+@media (min-width:768px){.icons{gap:14px}}
+.listen-open .icons{display:flex}
+.ico{width:44px;height:44px;display:flex;align-items:center;justify-content:center;opacity:0;filter:blur(6px);transition:transform .4s}
+.listen-open .ico{animation:icoIn .9s cubic-bezier(.2,.6,.1,1) forwards}
+@keyframes icoIn{to{opacity:.92;filter:blur(0)}}
+.ico:hover{transform:translateY(-3px)}
+.ico svg{transition:filter .5s}
+.ico:hover svg{filter:drop-shadow(0 0 7px rgba(var(--glow),.6)) drop-shadow(0 0 2px rgba(255,241,220,.5))}
+
+/* contact hint */
+#hint{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:10px;padding:8px 14px 8px calc(14px + .4em);font-size:8px;letter-spacing:.4em;--o:.75;transition:opacity .4s}
+.entered #hint{display:flex}
+#hint:hover{opacity:1 !important}
+.drip{position:relative;overflow:hidden;width:1px;height:30px;background:rgba(235,211,181,.25)}
+.drip::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:linear-gradient(to bottom,transparent,var(--ink));animation:drip 2.4s cubic-bezier(.6,0,.3,1) infinite}
+@keyframes drip{to{top:100%}}
+
+/* ---------- contact ---------- */
+#contact{display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none}
+.contact-glow{position:absolute;left:0;top:-40%;width:100%;height:80%;object-fit:cover;filter:blur(60px);opacity:.28;pointer-events:none}
+.contact-body{position:relative;display:flex;flex-direction:column;align-items:center;gap:22px}
+.label,.mail{font-size:8px;letter-spacing:.4em}
+.label{padding-left:.4em}
+.mail{padding:12px 0 12px .4em;text-decoration:none;--lb:6px;transition:opacity .4s}
+.mail:hover{opacity:1 !important}
+#top{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));margin-left:-22px;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+
+/* ---------- film overlay ---------- */
+.fx{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%)}
+.grain{position:absolute;left:-50%;top:-50%;width:200%;height:200%;opacity:var(--grain);mix-blend-mode:overlay;animation:grain .7s steps(6) infinite;will-change:transform}
+@keyframes grain{0%{transform:translate(0,0)}17%{transform:translate(-5%,3%)}33%{transform:translate(3%,-6%)}50%{transform:translate(-2%,7%)}67%{transform:translate(6%,1%)}83%{transform:translate(-7%,-3%)}100%{transform:translate(0,0)}}
+.flick{position:absolute;inset:0;background:#070302;opacity:0;visibility:hidden}
+.entered .flick{animation:flick 1.5s linear forwards}
+@keyframes flick{0%{opacity:0;visibility:visible}8%{opacity:.92}13%{opacity:.15}19%{opacity:.85}26%{opacity:0}33%{opacity:.55}40%{opacity:0}100%{opacity:0;visibility:hidden}}
+
+@media (prefers-reduced-motion:reduce){
+  .weave,.breathe,.grain,.drip::after,.line::after,#enter{animation:none}
+}
+</style>
+</head>
+<body>
+<main id="stage">
+
+  <!-- Contact (second screen) -->
+  <section id="contact" class="layer" aria-hidden="true">
+    <img class="contact-glow" src="nightmare-cover.jpg" alt="" aria-hidden="true">
+    <div class="contact-body">
+      <span class="label" id="o1">Contact</span>
+      <a class="mail line" id="o2" href="mailto:mbaronvon@gmail.com">mbaronvon@gmail.com</a>
+    </div>
+    <button id="top" aria-label="Back to top"><svg width="9" height="14" viewBox="0 0 9 14" fill="none" stroke="currentColor" stroke-width="1" opacity=".6" aria-hidden="true"><path d="M4.5 13.5V1M1 4.5l3.5-3.5L8 4.5"/></svg></button>
+  </section>
+
+  <!-- Cover (first screen) -->
+  <section id="cover" class="layer">
+    <div class="weave"><div class="breathe">
+      <div class="wake"><img class="cover-img" src="nightmare-cover.jpg" alt="NIGHTMARE cover art"></div>
+      <img class="smear" src="nightmare-cover.jpg" alt="" aria-hidden="true">
+    </div></div>
+    <div class="shade"></div>
+    <div class="shade-deep"></div>
+
+    <div class="center">
+      <button id="enter">Enter</button>
+      <div class="hub">
+        <h1 class="in" style="animation-delay:1.9s">Nightmare</h1>
+        <button id="listen" class="line in" aria-expanded="false" style="animation-delay:2.6s">Listen now</button>
+        <div class="icons-slot">
+          <!-- PLATFORM LINKS: one href per data-platform -->
+          <nav class="icons" aria-label="Listen on">
+            <a class="ico" href="https://open.spotify.com/artist/4glGYB4HxcGcBwPKZQsUxw?si=ddR1AneVSUqPvYvMzOHgzw&amp;utm_source=copy-link" data-platform="spotify" aria-label="Spotify" target="_blank" rel="noopener" style="animation-delay:0s"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="mSp"><rect width="24" height="24" fill="#fff"/><g fill="none" stroke="#000" stroke-linecap="round"><path d="M6.2 9.3c3.9-1.2 8.4-.8 11.8 1.2" stroke-width="1.9"/><path d="M6.9 12.7c3.2-.9 6.8-.5 9.6 1" stroke-width="1.6"/><path d="M7.5 15.8c2.6-.7 5.3-.4 7.5.8" stroke-width="1.3"/></g></mask><linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="-24" y1="-4" x2="0" y2="4"><stop offset="0" stop-color="#EBD3B5"/><stop offset=".4" stop-color="#EBD3B5"/><stop offset=".5" stop-color="#FFFAF2"/><stop offset=".6" stop-color="#EBD3B5"/><stop offset="1" stop-color="#EBD3B5"/><animateTransform attributeName="gradientTransform" type="translate" values="0 0;48 0;48 0" keyTimes="0;.4;1" dur="4.2s" begin=".9s" repeatCount="indefinite"/></linearGradient></defs><circle cx="12" cy="12" r="11" fill="url(#g1)" mask="url(#mSp)"/></svg></a>
+            <a class="ico" href="https://music.apple.com/ca/artist/samy-rocchi/1459050051" data-platform="apple" aria-label="Apple Music" target="_blank" rel="noopener" style="animation-delay:.08s"><svg width="20" height="20" viewBox="0 0 24 24" fill="url(#g2)" aria-hidden="true"><defs><linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="-24" y1="-4" x2="0" y2="4"><stop offset="0" stop-color="#EBD3B5"/><stop offset=".4" stop-color="#EBD3B5"/><stop offset=".5" stop-color="#FFFAF2"/><stop offset=".6" stop-color="#EBD3B5"/><stop offset="1" stop-color="#EBD3B5"/><animateTransform attributeName="gradientTransform" type="translate" values="0 0;48 0;48 0" keyTimes="0;.4;1" dur="4.2s" begin="1.08s" repeatCount="indefinite"/></linearGradient></defs><path d="M8.6 6.4L19.4 4V6.6L8.6 9Z"/><rect x="8.6" y="6.6" width="1.3" height="10.4"/><rect x="18.1" y="4.2" width="1.3" height="10.6"/><ellipse cx="6.9" cy="17.1" rx="2.9" ry="2.2" transform="rotate(-20 6.9 17.1)"/><ellipse cx="16.4" cy="14.9" rx="2.9" ry="2.2" transform="rotate(-20 16.4 14.9)"/></svg></a>
+            <a class="ico" href="https://music.youtube.com/channel/UCT2j-nnwObXNkGPIvvueSTg" data-platform="youtube" aria-label="YouTube Music" target="_blank" rel="noopener" style="animation-delay:.16s"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="mYt"><rect width="24" height="24" fill="#fff"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10.2 9.2v5.6l4.8-2.8z" fill="#000"/></mask><linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="-24" y1="-4" x2="0" y2="4"><stop offset="0" stop-color="#EBD3B5"/><stop offset=".4" stop-color="#EBD3B5"/><stop offset=".5" stop-color="#FFFAF2"/><stop offset=".6" stop-color="#EBD3B5"/><stop offset="1" stop-color="#EBD3B5"/><animateTransform attributeName="gradientTransform" type="translate" values="0 0;48 0;48 0" keyTimes="0;.4;1" dur="4.2s" begin="1.26s" repeatCount="indefinite"/></linearGradient></defs><circle cx="12" cy="12" r="11" fill="url(#g3)" mask="url(#mYt)"/></svg></a>
+            <a class="ico" href="https://tidal.com/artist/15475674" data-platform="tidal" aria-label="Tidal" target="_blank" rel="noopener" style="animation-delay:.24s"><svg width="22" height="20" viewBox="0 0 24 24" fill="url(#g4)" aria-hidden="true"><defs><linearGradient id="g4" gradientUnits="userSpaceOnUse" x1="-24" y1="-4" x2="0" y2="4"><stop offset="0" stop-color="#EBD3B5"/><stop offset=".4" stop-color="#EBD3B5"/><stop offset=".5" stop-color="#FFFAF2"/><stop offset=".6" stop-color="#EBD3B5"/><stop offset="1" stop-color="#EBD3B5"/><animateTransform attributeName="gradientTransform" type="translate" values="0 0;48 0;48 0" keyTimes="0;.4;1" dur="4.2s" begin="1.44s" repeatCount="indefinite"/></linearGradient></defs><path d="M6 5.5l3 3-3 3-3-3z"/><path d="M12 5.5l3 3-3 3-3-3z"/><path d="M18 5.5l3 3-3 3-3-3z"/><path d="M12 11.5l3 3-3 3-3-3z"/></svg></a>
+            <a class="ico" href="https://music.amazon.com/artists/B07QCLSQ16/samy-rocchi" data-platform="amazon" aria-label="Amazon Music" target="_blank" rel="noopener" style="animation-delay:.32s"><svg width="22" height="20" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g5" gradientUnits="userSpaceOnUse" x1="-24" y1="-4" x2="0" y2="4"><stop offset="0" stop-color="#EBD3B5"/><stop offset=".4" stop-color="#EBD3B5"/><stop offset=".5" stop-color="#FFFAF2"/><stop offset=".6" stop-color="#EBD3B5"/><stop offset="1" stop-color="#EBD3B5"/><animateTransform attributeName="gradientTransform" type="translate" values="0 0;48 0;48 0" keyTimes="0;.4;1" dur="4.2s" begin="1.62s" repeatCount="indefinite"/></linearGradient></defs><path d="M3 13.6c5 3.6 13 3.6 18 0" fill="none" stroke="url(#g5)" stroke-width="1.8" stroke-linecap="round"/><path d="M17.6 11.9l4.2 1-1.5 3.9z" fill="url(#g5)"/></svg></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <button id="hint" class="in" style="animation-delay:3.4s"><span>Contact</span><span class="drip" aria-hidden="true"></span></button>
+  </section>
+
+  <!-- Film overlay -->
+  <div class="fx" aria-hidden="true">
+    <div class="vignette"></div>
+    <svg class="grain"><filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#grainF)"/></svg>
+    <div class="flick"></div>
+  </div>
+</main>
+
+<script>
+(() => {
+  const body = document.body;
+  const stage = document.getElementById('stage');
+  const cover = document.getElementById('cover');
+  const contact = document.getElementById('contact');
+  const o1 = document.getElementById('o1');
+  const o2 = document.getElementById('o2');
+  const topBtn = document.getElementById('top');
+  const listen = document.getElementById('listen');
+
+  let entered = false;
+  let p = 0;          // 0 = cover, 1 = contact
+  let target = 0;
+  let dragging = false;
+  let snapT, startY, startP, lastY, lastT, vel = 0;
+
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+
+  function render() {
+    const c = p > 0.5;
+    cover.style.opacity = clamp(1 - (p - 0.3) / 0.7);
+    cover.style.transform = `translateY(${-p * 32}%) scale(${1 + p * 0.06})`;
+    cover.style.filter = p > 0.001 ? `blur(${p * 12}px) brightness(${1 - p * 0.6})` : '';
+    cover.style.pointerEvents = c ? 'none' : 'auto';
+
+    contact.style.opacity = clamp((p - 0.2) / 0.6);
+    contact.style.transform = `translateY(${(1 - p) * 32}%)`;
+    contact.style.filter = p < 0.999 ? `blur(${(1 - p) * 8}px)` : '';
+    contact.style.pointerEvents = c ? 'auto' : 'none';
+    contact.setAttribute('aria-hidden', c ? 'false' : 'true');
+
+    o1.style.opacity = 0.75 * clamp((p - 0.45) / 0.35);
+    o2.style.opacity = 0.75 * clamp((p - 0.55) / 0.35);
+    topBtn.style.opacity = clamp((p - 0.7) / 0.3);
+  }
+
+  function loop() {
+    if (!dragging) {
+      const d = target - p;
+      if (Math.abs(d) > 0.0005) {
+        p = Math.abs(d) < 0.002 ? target : p + d * 0.085;
+        render();
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+
+  const setTarget = (t) => { target = clamp(t); };
+  function snap(dir) {
+    const t = target;
+    setTarget(dir > 0 ? (t > 0.15 ? 1 : 0) : dir < 0 ? (t < 0.85 ? 0 : 1) : Math.round(t));
+  }
+
+  document.getElementById('enter').addEventListener('click', () => {
+    entered = true;
+    body.classList.add('entered');
+  });
+
+  listen.addEventListener('click', () => {
+    const open = body.classList.toggle('listen-open');
+    listen.setAttribute('aria-expanded', String(open));
+  });
+
+  document.getElementById('hint').addEventListener('click', () => { if (entered) setTarget(1); });
+  topBtn.addEventListener('click', () => setTarget(0));
+
+  stage.addEventListener('wheel', (ev) => {
+    ev.preventDefault();
+    if (!entered) return;
+    setTarget(target + ev.deltaY / 900);
+    const dir = Math.sign(ev.deltaY);
+    clearTimeout(snapT);
+    snapT = setTimeout(() => snap(dir), 160);
+  }, { passive: false });
+
+  stage.addEventListener('touchstart', (ev) => {
+    if (!entered) return;
+    dragging = true;
+    startY = lastY = ev.touches[0].clientY;
+    startP = p;
+    lastT = performance.now();
+    vel = 0;
+  }, { passive: true });
+
+  stage.addEventListener('touchmove', (ev) => {
+    if (!dragging) return;
+    const y = ev.touches[0].clientY;
+    const now = performance.now();
+    vel = (lastY - y) / Math.max(1, now - lastT);
+    lastY = y;
+    lastT = now;
+    setTarget(startP + (startY - y) / (stage.clientHeight * 0.75));
+    p = target;
+    render();
+  }, { passive: true });
+
+  const endDrag = () => {
+    if (!dragging) return;
+    dragging = false;
+    snap(Math.abs(vel) > 0.3 ? Math.sign(vel) : 0);
+  };
+  stage.addEventListener('touchend', endDrag);
+  stage.addEventListener('touchcancel', endDrag);
+
+  document.addEventListener('keydown', (ev) => {
+    if (!entered) return;
+    if (ev.key === 'ArrowDown' || ev.key === 'PageDown') setTarget(1);
+    if (ev.key === 'ArrowUp' || ev.key === 'PageUp') setTarget(0);
+  });
+
+  render();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
